@@ -38,7 +38,7 @@ const Sidebar = () => {
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
-
+  
   return (
     <Box
       sx={{
@@ -56,6 +56,9 @@ const Sidebar = () => {
         },
         "& .pro-menu-item.active": {
           color: "#6870fa !important",
+        },
+        "& .pro-sidebar": {
+          minHeight: "115vh"
         },
       }}
     >
@@ -202,6 +205,7 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
+            
           </Box>
         </Menu>
       </ProSidebar>

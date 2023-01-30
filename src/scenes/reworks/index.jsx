@@ -1,30 +1,83 @@
+import ReworkDetail from "./reworkSpecific";
 import { Box } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import { mockDatareworks } from "../../data/mockData";
 import Header from "../../components/Header";
 import { useTheme } from "@mui/material";
 import Link from '@mui/material/Link';
 import { useNavigate } from "react-router-dom";
+import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
+import { db } from "../../firebase";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import IconButton from "@mui/material/IconButton";
 
 const Reworks = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const navigate = useNavigate();
 
+  const [dataCollection, setDataCollection] = useState([]);
+  const [toReworkSpecific, setToReworkSpecific] = useState(false);
+  
+  //for delete
+  const [hoveredRow, setHoveredRow] = useState(null);
+
+  const onMouseEnterRow = (event) => {
+    const id = event.currentTarget.getAttribute("data-id");
+    setHoveredRow(id);
+  };
+
+  const onMouseLeaveRow = (event) => {
+    setHoveredRow(null);
+  };
+ //-----------------------
+    
+  useEffect(()=>{
+    (async()=>{
+      let dataList = []
+      try {
+        const querySnapshot = await getDocs(collection(db, "Reworks"));
+        querySnapshot.forEach((doc) => {
+          dataList.push({id:doc.id, ...doc.data()})
+        })
+      } catch (error) {
+        console.log(error);
+      }
+      setDataCollection(dataList);
+    })();  
+  }, [dataCollection]);
+
+  function destructData(data) {
+    let dataList = [];
+    data.forEach(element => {
+        let {id, values:{
+          order_id, order_date, return_date, order_type, customer_name, rework_quantity,
+          product_name, product_specification, return_reason
+        }}=element
+        dataList.push({id:id, order_id:order_id, order_date:order_date,
+          return_date:return_date,order_type:order_type, customer_name:customer_name,
+          rework_quantity:rework_quantity,product_name:product_name,
+          product_specification:product_specification,return_reason:return_reason});
+    });
+    return dataList;
+  }
+
+  // console.log(destructData(dataCollection));
+
   const columns = [
-    { field: "id", headerName: "ID", flex: 0.5, render:rowData=> <Link href="/">{rowData.id}</Link>},
-    { field: "return_date", headerName: "日期" },
+    { field: "id", headerName: "重工編號",flex:1, render:rowData=> <Link href="/">{rowData.id}</Link>},
+    { field: "order_id", headerName: "排程單號",flex:1 },
+    { field: "order_date", headerName: "訂單日期",flex:1 },
+    { field: "return_date", headerName: "退貨日期",flex:1 },
+    { field: "order_type", headerName: "訂單類別",flex:1 },
     {
       field: "customer_name",
       headerName: "客戶",
       flex: 1,
       cellClassName: "name-column--cell",
-    },
-    {
-      field: "product_name",
-      headerName: '品名',
-      flex: 1,
     },
     {
       field: "rework_quantity",
@@ -34,31 +87,69 @@ const Reworks = () => {
       align: "left",
     },
     {
+      field: "product_name",
+      headerName: '產品名稱',
+      flex: 1,
+    },
+    {
       field: "product_specification",
-      headerName: "規格",
+      headerName: "產品規格",
       flex: 1,
     },
     {
-      field: "product_color",
-      headerName: "顏色",
+      field: "return_reason",
+      headerName: "退貨原因",
       flex: 1,
     },
     {
-      field: "factor_name",
-      headerName: "重工原因",
+      field:"actions",
+      headerName:"",
       flex: 1,
-    },
-    {
-      field: "department_name",
-      headerName: "責任單位",
-      flex: 1,
-    },
+      sortable: false,
+      disableColumnMenu: true,
+      renderCell: (params) => {
+        if (hoveredRow === params.id) {
+          return (
+            <Box
+              sx={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center"
+              }}
+            >
+              <IconButton onClick={
+                () => {
+                  navigate(`/reworks/${hoveredRow}`);
+                  setToReworkSpecific(true);
+                }
+              }>
+                <EditIcon />
+              </IconButton>
+              <IconButton type="button" onClick={
+                async() => {
+                  await deleteDoc(doc(db, "Reworks", hoveredRow))
+                  }
+                }>
+                <DeleteIcon />
+              </IconButton>
+            </Box>
+          );
+        } else return null;
+      }
+
+    }
   ];
 
+  const { id } = useParams();
+  // setReworkId(id);
 
   return (
     <Box m="20px">
-      <Header
+      {toReworkSpecific ? <ReworkDetail id={id}/> :
+      <div>
+        <Header
         title="重工總表"
         subtitle="List of reworks for Future Reference"
       />
@@ -95,14 +186,25 @@ const Reworks = () => {
         }}
       >
         <DataGrid
-          rows={mockDatareworks}
+          rows={destructData(dataCollection)}
           columns={columns}
           components={{ Toolbar: GridToolbar }}
-          onRowClick={(params) => {
-            navigate(`/rework/id/${params.row.id}`);
+          initialState={{ pinnedColumns: { right: ["actions"] } }}
+          componentsProps={{
+            row:{
+              onMouseEnter: onMouseEnterRow,
+              onMouseLeave: onMouseLeaveRow
+            }
           }}
+          // onRowClick={(params) => {
+          //   navigate(`/reworks/${params.row.id}`);
+          //   setToReworkSpecific(true);
+          // }}
         />
       </Box>
+        </div>
+      }
+      
     </Box>
   );
 };

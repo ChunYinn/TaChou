@@ -2,19 +2,80 @@ import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import { mockTransactions } from "../../data/mockData";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
-import EmailIcon from "@mui/icons-material/Email";
-import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
+import ConstructionRoundedIcon from '@mui/icons-material/ConstructionRounded';
+import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import TrafficIcon from "@mui/icons-material/Traffic";
 import Header from "../../components/Header";
-import LineChart from "../../components/LineChart";
-import BarChart from "../../components/BarChart";
+// import BarChart from "../../components/BarChart";
 import StatBox from "../../components/StatBox";
-import ProgressCircle from "../../components/ProgressCircle";
+import PieChart from "../../components/PieChart";
+import { collection, query, where, getCountFromServer } from "firebase/firestore";
+import { db } from "../../firebase";
+import { useEffect, useState } from "react";
+
 
 const Dashboard = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  //usestate store values for stat
+  const [numReworks, setNumReworks] = useState(0);
+  const [numIncompleteReworks, setnumIncompleteReworks] = useState(0);
+
+  //cureent month / year 
+  const currentMonth = String(new Date().getMonth() + 1);
+  const currentYear = new Date().getFullYear();
+  let YearWmonth;
+  if (currentMonth < 10){
+    YearWmonth = `${currentYear}0${currentMonth}`
+  } else {
+    YearWmonth = `${currentYear}${currentMonth}`
+  };
+
+  //Fetch GetReworkMonthly
+  useEffect(()=>{
+    const GetReworkMonthly = async()=>{
+      try {
+        const q = query(collection(db, "Reworks"), where("timeStamp", ">=", YearWmonth));
+        const snapshot = await getCountFromServer(q);
+        console.log(snapshot)
+        setNumReworks(snapshot.data().count)
+        // console.log(numReworks);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    GetReworkMonthly();
+  },[numReworks, YearWmonth])
+
+  //fetch incomplete reworks
+  useEffect(()=>{
+    const GetIncompleteReworks = async()=>{
+      try {
+        const q = query(collection(db, "Reworks"), where("values.rework_complete_date", "==", ""));
+        const snapshot = await getCountFromServer(q);
+        setnumIncompleteReworks(snapshot.data().count)
+        // console.log("rework incomplete: " + numIncompleteReworks);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    GetIncompleteReworks();
+  },[numIncompleteReworks])
+
+  // //import google cloud client library
+  // const {BigQuery} = require('@google-cloud/bigquery');
+
+  // async function createDataset() {
+  //   // Creates a client
+  //   const bigqueryClient = new BigQuery();
+
+  //   // Create the dataset
+  //   const [dataset] = await bigqueryClient.createDataset(rework_dataset);
+  //   console.log(`Dataset ${tachourework.rework_dataset} created.`);
+  // }
+  // createDataset();
 
   return (
     <Box m="20px">
@@ -54,12 +115,12 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="12,361"
-            subtitle="Emails Sent"
+            title={numReworks}
+            subtitle="本月重工隻數"
             progress="0.75"
-            increase="+14%"
+            // increase="+14%"
             icon={
-              <EmailIcon
+              <ConstructionRoundedIcon
                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
               />
             }
@@ -73,12 +134,12 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="431,225"
-            subtitle="Sales Obtained"
-            progress="0.50"
-            increase="+21%"
+            title={numIncompleteReworks}
+            subtitle="還未完成重工隻數"
+            progress="0.70"
+            // increase="+21%"
             icon={
-              <PointOfSaleIcon
+              <ErrorOutlineRoundedIcon
                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
               />
             }
@@ -123,9 +184,9 @@ const Dashboard = () => {
           />
         </Box>
 
-        {/* ROW 2 */}
+        {/* ROW 2
         <Box
-          gridColumn="span 8"
+          gridColumn="span 12"
           gridRow="span 2"
           backgroundColor={colors.primary[400]}
         >
@@ -142,14 +203,14 @@ const Dashboard = () => {
                 fontWeight="600"
                 color={colors.grey[100]}
               >
-                Revenue Generated
+                每部門
               </Typography>
               <Typography
-                variant="h3"
+                variant="h4"
                 fontWeight="bold"
                 color={colors.greenAccent[500]}
               >
-                $59,342.32
+                每月重工支數  
               </Typography>
             </Box>
             <Box>
@@ -161,9 +222,10 @@ const Dashboard = () => {
             </Box>
           </Box>
           <Box height="250px" m="-20px 0 0 0">
-            <LineChart isDashboard={true} />
+            <BarChart isDashboard={true} />
           </Box>
-        </Box>
+        </Box> */}
+        {/* ------------------------------------------------- */}
         <Box
           gridColumn="span 4"
           gridRow="span 2"
@@ -217,48 +279,24 @@ const Dashboard = () => {
 
         {/* ROW 3 */}
         <Box
-          gridColumn="span 4"
-          gridRow="span 2"
-          backgroundColor={colors.primary[400]}
-          p="30px"
-        >
-          <Typography variant="h5" fontWeight="600">
-            Campaign
-          </Typography>
-          <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            mt="25px"
-          >
-            <ProgressCircle size="125" />
-            <Typography
-              variant="h5"
-              color={colors.greenAccent[500]}
-              sx={{ mt: "15px" }}
-            >
-              $48,352 revenue generated
-            </Typography>
-            <Typography>Includes extra misc expenditures and costs</Typography>
-          </Box>
-        </Box>
-        <Box
-          gridColumn="span 4"
+          gridColumn="span 8"
           gridRow="span 2"
           backgroundColor={colors.primary[400]}
         >
           <Typography
-            variant="h5"
-            fontWeight="600"
+            variant="h4"
+            fontWeight="bold"
+            color={colors.greenAccent[500]}
             sx={{ padding: "30px 30px 0 30px" }}
           >
-            Sales Quantity
+            重工原因比例
           </Typography>
           <Box height="250px" mt="-20px">
-            <BarChart isDashboard={true} />
+            <PieChart isDashboard={true} />
           </Box>
         </Box>
       </Box>
+
     </Box>
   );
 };
