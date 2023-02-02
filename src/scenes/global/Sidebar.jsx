@@ -126,8 +126,7 @@ const Sidebar = () => {
                   width="100px"
                   height="100px"
                   src={
-                    User === "manager" ? `../../assets/manager.png`
-                  : `../../assets/tachou.png`
+                    `../../assets/${User}.png`
                   }
                   style={{ cursor: "pointer", borderRadius: "50%" }}
                 />
