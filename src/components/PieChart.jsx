@@ -1,43 +1,90 @@
 import { ResponsivePie } from "@nivo/pie";
 import { tokens } from "../theme";
 import { useTheme } from "@mui/material";
+import { useEffect, useState } from "react";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "../firebase";
+
 
 const PieChart = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  const data = [
-    {
-      id: "hack",
-      label: "hack",
-      value: 239,
-      color: "hsl(104, 70%, 50%)",
-    },
-    {
-      id: "make",
-      label: "make",
-      value: 170,
-      color: "hsl(162, 70%, 50%)",
-    },
-    {
-      id: "go",
-      label: "go",
-      value: 322,
-      color: "hsl(291, 70%, 50%)",
-    },
-    {
-      id: "lisp",
-      label: "lisp",
-      value: 503,
-      color: "hsl(229, 70%, 50%)",
-    },
-    {
-      id: "scala",
-      label: "scala",
-      value: 584,
-      color: "hsl(344, 70%, 50%)",
-    },
-  ];  
+  //1 Set empty listFactorsQuantity
+  const [listFactorsQuantity, setListFactorsQuantity] = useState(0);
+
+  //2 Get this year each document from Reworks db
+  //current year 
+  const currentYear = new Date().getFullYear();
+
+  //check is numeric
+  function containsOnlyNumbers(str) {
+    return /^\d+$/.test(str);
+  }
+
+  useEffect(() => {
+    try {
+      let listFactorsQuantity = [];
+      getDocs(collection(db, "Reworks"), where("timeStamp", ">=", currentYear))
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+
+            const factorName = doc.data().values.factor_name;
+            const reworkQuantity = Number(doc.data().values.rework_quantity);
+
+          if (factorName !== "" && containsOnlyNumbers(reworkQuantity)) {
+            let factorIndex = listFactorsQuantity.findIndex(
+              (item) => item[0] === factorName
+            );
+            // If factor in document is not inside list then push into list
+            if (factorIndex === -1) {
+              listFactorsQuantity.push([factorName, reworkQuantity]);
+
+              // Else if factor in document is inside list then add quantity into that factor
+            } else {
+              listFactorsQuantity[factorIndex][1] += reworkQuantity;
+            }
+          }
+          setListFactorsQuantity(listFactorsQuantity);
+          
+          });
+          //3 Decending order of list by quantity
+          listFactorsQuantity.sort(function(a, b) {
+            return b[1] - a[1];
+          });
+          setListFactorsQuantity(listFactorsQuantity);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  }, [currentYear]);
+
+  console.log(listFactorsQuantity);
+
+  //Example of listFactorsQuantity
+  //0: ['硬度高', 23]
+  // 1: ['拿錯鐵輪', 14]
+  // 2: ['膠面白點', 5]
+  
+  const data = [];
+  for (let i = 0; i < 5; i++) {
+    if (listFactorsQuantity[i]) {
+      data.push({
+        id: listFactorsQuantity[i][0],
+        label: listFactorsQuantity[i][0],
+        value: listFactorsQuantity[i][1],
+        color: `hsl(${104 + 58 * i}, 70%, 50%)`,
+      });
+    } else {
+      data.push({
+        id: "無",
+        label: "無",
+        value: 0,
+        color: `hsl(${104 + 58 * i}, 70%, 50%)`,
+      });
+    }
+  }
+
 
   return (
     <ResponsivePie

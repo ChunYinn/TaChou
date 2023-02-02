@@ -5,6 +5,7 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import { useEffect, useState } from "react";
 
+let count = 0;
 const BarChart = ({ isDashboard = false }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -22,6 +23,10 @@ const BarChart = ({ isDashboard = false }) => {
   const [november, setnovember] = useState({inner:0,yuanLiao:0,baoJiao:0,carBed:0,iron:0,pinQuan:0});
   const [december, setdecember] = useState({inner:0,yuanLiao:0,baoJiao:0,carBed:0,iron:0,pinQuan:0});
 
+  //check is numeric
+  function containsOnlyNumbers(str) {
+    return /^\d+$/.test(str);
+  }
 
   //current year 
   const currentYear = new Date().getFullYear();
@@ -40,37 +45,49 @@ const BarChart = ({ isDashboard = false }) => {
         let count1=0;
         const snapshot1 = await getDocs(q1);
         snapshot1.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}01`)){count1++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}01`) && doc.data().values.rework_quantity !== ""){
+            count1+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count2=0;
         const snapshot2 = await getDocs(q2);
         snapshot2.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}01`)){count2++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}01`) && doc.data().values.rework_quantity !== ""){
+            count2+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count3=0;
         const snapshot3 = await getDocs(q3);
         snapshot3.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}01`)){count3++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}01`) && doc.data().values.rework_quantity !== ""){
+            count3+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count4=0;
         const snapshot4 = await getDocs(q4);
         snapshot4.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}01`)){count4++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}01`) && doc.data().values.rework_quantity !== ""){
+            count4+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count5=0;
         const snapshot5 = await getDocs(q5);
         snapshot5.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}01`)){count5++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}01`) && doc.data().values.rework_quantity !== ""){
+            count5+=doc.data().values.rework_quantity;
+          }
         });
         //---------------
         let count6=0;
         const snapshot6 = await getDocs(q6);
         snapshot6.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}01`)){count6++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}01`) && doc.data().values.rework_quantity !== ""){
+            count6+=doc.data().values.rework_quantity;
+          }
         });
         //---------------
         setJanuary({inner:count1,yuanLiao:count2,baoJiao:count3,carBed:count4,iron:count5,pinQuan:count6})
@@ -79,7 +96,8 @@ const BarChart = ({ isDashboard = false }) => {
       }
     }
     barChartData1();
-  },[january,currentYear])
+    console.log(count++);
+  },[])
 
   //Month 2
   useEffect(()=>{
@@ -95,37 +113,49 @@ const BarChart = ({ isDashboard = false }) => {
         let count1=0;
         const snapshot1 = await getDocs(q1);
         snapshot1.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}02`)){count1++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}02`) && doc.data().values.rework_quantity !== ""){
+            count1+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count2=0;
         const snapshot2 = await getDocs(q2);
         snapshot2.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}02`)){count2++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}02`) && doc.data().values.rework_quantity !== ""){
+            count2+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count3=0;
         const snapshot3 = await getDocs(q3);
         snapshot3.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}02`)){count3++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}02`) && doc.data().values.rework_quantity !== ""){
+            count3+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count4=0;
         const snapshot4 = await getDocs(q4);
         snapshot4.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}02`)){count4++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}02`) && doc.data().values.rework_quantity !== ""){
+            count4+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count5=0;
         const snapshot5 = await getDocs(q5);
         snapshot5.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}02`)){count5++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}02`) && doc.data().values.rework_quantity !== ""){
+            count5+=doc.data().values.rework_quantity;
+          }
         });
         //---------------
         let count6=0;
         const snapshot6 = await getDocs(q6);
         snapshot6.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}02`)){count6++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}02`) && doc.data().values.rework_quantity !== ""){
+            count6+=doc.data().values.rework_quantity;
+          }
         });
         //---------------
         setfebuary({inner:count1,yuanLiao:count2,baoJiao:count3,carBed:count4,iron:count5,pinQuan:count6})
@@ -134,7 +164,8 @@ const BarChart = ({ isDashboard = false }) => {
       }
     }
     barChartData1();
-  },[febuary,currentYear])
+    console.log(count++);
+  },[])
   
   //Month 3
   useEffect(()=>{
@@ -150,37 +181,49 @@ const BarChart = ({ isDashboard = false }) => {
         let count1=0;
         const snapshot1 = await getDocs(q1);
         snapshot1.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}03`)){count1++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}03`) && doc.data().values.rework_quantity !== ""){
+            count1+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count2=0;
         const snapshot2 = await getDocs(q2);
         snapshot2.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}03`)){count2++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}03`) && doc.data().values.rework_quantity !== ""){
+            count2+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count3=0;
         const snapshot3 = await getDocs(q3);
         snapshot3.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}03`)){count3++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}03`) && doc.data().values.rework_quantity !== ""){
+            count3+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count4=0;
         const snapshot4 = await getDocs(q4);
         snapshot4.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}03`)){count4++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}03`) && doc.data().values.rework_quantity !== ""){
+            count4+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count5=0;
         const snapshot5 = await getDocs(q5);
         snapshot5.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}03`)){count5++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}03`) && doc.data().values.rework_quantity !== ""){
+            count5+=doc.data().values.rework_quantity;
+          }
         });
         //---------------
         let count6=0;
         const snapshot6 = await getDocs(q6);
         snapshot6.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}03`)){count6++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}03`) && doc.data().values.rework_quantity !== ""){
+            count6+=doc.data().values.rework_quantity;
+          }
         });
         //---------------
         setmarch({inner:count1,yuanLiao:count2,baoJiao:count3,carBed:count4,iron:count5,pinQuan:count6})
@@ -189,7 +232,8 @@ const BarChart = ({ isDashboard = false }) => {
       }
     }
     barChartData1();
-  },[march,currentYear])
+    console.log(count++);
+  },[])
 
   //Month 4
   useEffect(()=>{
@@ -205,37 +249,49 @@ const BarChart = ({ isDashboard = false }) => {
         let count1=0;
         const snapshot1 = await getDocs(q1);
         snapshot1.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}04`)){count1++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}04`) && doc.data().values.rework_quantity !== ""){
+            count1+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count2=0;
         const snapshot2 = await getDocs(q2);
         snapshot2.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}04`)){count2++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}04`) && doc.data().values.rework_quantity !== ""){
+            count2+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count3=0;
         const snapshot3 = await getDocs(q3);
         snapshot3.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}04`)){count3++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}04`) && doc.data().values.rework_quantity !== ""){
+            count3+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count4=0;
         const snapshot4 = await getDocs(q4);
         snapshot4.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}04`)){count4++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}04`) && doc.data().values.rework_quantity !== ""){
+            count4+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count5=0;
         const snapshot5 = await getDocs(q5);
         snapshot5.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}04`)){count5++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}04`) && doc.data().values.rework_quantity !== ""){
+            count5+=doc.data().values.rework_quantity;
+          }
         });
         //---------------
         let count6=0;
         const snapshot6 = await getDocs(q6);
         snapshot6.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}04`)){count6++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}04`) && doc.data().values.rework_quantity !== ""){
+            count6+=doc.data().values.rework_quantity;
+          }
         });
         //---------------
         setapril({inner:count1,yuanLiao:count2,baoJiao:count3,carBed:count4,iron:count5,pinQuan:count6})
@@ -244,7 +300,8 @@ const BarChart = ({ isDashboard = false }) => {
       }
     }
     barChartData1();
-  },[april,currentYear])
+    console.log(count++);
+  },[])
 
   //Month 5
   useEffect(()=>{
@@ -260,37 +317,49 @@ const BarChart = ({ isDashboard = false }) => {
         let count1=0;
         const snapshot1 = await getDocs(q1);
         snapshot1.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}05`)){count1++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}05`) && doc.data().values.rework_quantity !== ""){
+            count1+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count2=0;
         const snapshot2 = await getDocs(q2);
         snapshot2.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}05`)){count2++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}05`) && doc.data().values.rework_quantity !== ""){
+            count2+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count3=0;
         const snapshot3 = await getDocs(q3);
         snapshot3.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}05`)){count3++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}05`) && doc.data().values.rework_quantity !== ""){
+            count3+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count4=0;
         const snapshot4 = await getDocs(q4);
         snapshot4.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}05`)){count4++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}05`) && doc.data().values.rework_quantity !== ""){
+            count4+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count5=0;
         const snapshot5 = await getDocs(q5);
         snapshot5.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}05`)){count5++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}05`) && doc.data().values.rework_quantity !== ""){
+            count5+=doc.data().values.rework_quantity;
+          }
         });
         //---------------
         let count6=0;
         const snapshot6 = await getDocs(q6);
         snapshot6.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}05`)){count6++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}05`) && doc.data().values.rework_quantity !== ""){
+            count6+=doc.data().values.rework_quantity;
+          }
         });
         //---------------
         setmay({inner:count1,yuanLiao:count2,baoJiao:count3,carBed:count4,iron:count5,pinQuan:count6})
@@ -299,7 +368,8 @@ const BarChart = ({ isDashboard = false }) => {
       }
     }
     barChartData1();
-  },[may,currentYear])
+    console.log(count++);
+  },[])
 
   //Month 6
   useEffect(()=>{
@@ -315,37 +385,49 @@ const BarChart = ({ isDashboard = false }) => {
         let count1=0;
         const snapshot1 = await getDocs(q1);
         snapshot1.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}06`)){count1++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}06`) && doc.data().values.rework_quantity !== ""){
+            count1+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count2=0;
         const snapshot2 = await getDocs(q2);
         snapshot2.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}06`)){count2++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}06`) && doc.data().values.rework_quantity !== ""){
+            count2+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count3=0;
         const snapshot3 = await getDocs(q3);
         snapshot3.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}06`)){count3++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}06`) && doc.data().values.rework_quantity !== ""){
+            count3+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count4=0;
         const snapshot4 = await getDocs(q4);
         snapshot4.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}06`)){count4++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}06`) && doc.data().values.rework_quantity !== ""){
+            count4+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count5=0;
         const snapshot5 = await getDocs(q5);
         snapshot5.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}06`)){count5++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}06`) && doc.data().values.rework_quantity !== ""){
+            count5+=doc.data().values.rework_quantity;
+          }
         });
         //---------------
         let count6=0;
         const snapshot6 = await getDocs(q6);
         snapshot6.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}06`)){count6++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}06`) && doc.data().values.rework_quantity !== ""){
+            count6+=doc.data().values.rework_quantity;
+          }
         });
         //---------------
         setjune({inner:count1,yuanLiao:count2,baoJiao:count3,carBed:count4,iron:count5,pinQuan:count6})
@@ -354,7 +436,8 @@ const BarChart = ({ isDashboard = false }) => {
       }
     }
     barChartData1();
-  },[june,currentYear])
+    console.log(count++);
+  },[])
 
   //Month 7
   useEffect(()=>{
@@ -370,37 +453,49 @@ const BarChart = ({ isDashboard = false }) => {
         let count1=0;
         const snapshot1 = await getDocs(q1);
         snapshot1.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}07`)){count1++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}07`) && doc.data().values.rework_quantity !== ""){
+            count1+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count2=0;
         const snapshot2 = await getDocs(q2);
         snapshot2.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}07`)){count2++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}07`) && doc.data().values.rework_quantity !== ""){
+            count2+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count3=0;
         const snapshot3 = await getDocs(q3);
         snapshot3.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}07`)){count3++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}07`) && doc.data().values.rework_quantity !== ""){
+            count3+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count4=0;
         const snapshot4 = await getDocs(q4);
         snapshot4.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}07`)){count4++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}07`) && doc.data().values.rework_quantity !== ""){
+            count4+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count5=0;
         const snapshot5 = await getDocs(q5);
         snapshot5.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}07`)){count5++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}07`) && doc.data().values.rework_quantity !== ""){
+            count5+=doc.data().values.rework_quantity;
+          }
         });
         //---------------
         let count6=0;
         const snapshot6 = await getDocs(q6);
         snapshot6.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}07`)){count6++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}07`) && doc.data().values.rework_quantity !== ""){
+            count6+=doc.data().values.rework_quantity;
+          }
         });
         //---------------
         setjuly({inner:count1,yuanLiao:count2,baoJiao:count3,carBed:count4,iron:count5,pinQuan:count6})
@@ -409,7 +504,8 @@ const BarChart = ({ isDashboard = false }) => {
       }
     }
     barChartData1();
-  },[july,currentYear])
+    console.log(count++);
+  },[])
 
   //Month 8
   useEffect(()=>{
@@ -425,37 +521,49 @@ const BarChart = ({ isDashboard = false }) => {
         let count1=0;
         const snapshot1 = await getDocs(q1);
         snapshot1.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}08`)){count1++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}08`) && doc.data().values.rework_quantity !== ""){
+            count1+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count2=0;
         const snapshot2 = await getDocs(q2);
         snapshot2.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}08`)){count2++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}08`) && doc.data().values.rework_quantity !== ""){
+            count2+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count3=0;
         const snapshot3 = await getDocs(q3);
         snapshot3.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}08`)){count3++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}08`) && doc.data().values.rework_quantity !== ""){
+            count3+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count4=0;
         const snapshot4 = await getDocs(q4);
         snapshot4.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}08`)){count4++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}08`) && doc.data().values.rework_quantity !== ""){
+            count4+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count5=0;
         const snapshot5 = await getDocs(q5);
         snapshot5.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}08`)){count5++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}08`) && doc.data().values.rework_quantity !== ""){
+            count5+=doc.data().values.rework_quantity;
+          }
         });
         //---------------
         let count6=0;
         const snapshot6 = await getDocs(q6);
         snapshot6.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}08`)){count6++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}08`) && doc.data().values.rework_quantity !== ""){
+            count6+=doc.data().values.rework_quantity;
+          }
         });
         //---------------
         setaugust({inner:count1,yuanLiao:count2,baoJiao:count3,carBed:count4,iron:count5,pinQuan:count6})
@@ -464,7 +572,8 @@ const BarChart = ({ isDashboard = false }) => {
       }
     }
     barChartData1();
-  },[august,currentYear])
+    console.log(count++);
+  },[])
 
   //Month 9
   useEffect(()=>{
@@ -480,37 +589,49 @@ const BarChart = ({ isDashboard = false }) => {
         let count1=0;
         const snapshot1 = await getDocs(q1);
         snapshot1.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}09`)){count1++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}09`) && doc.data().values.rework_quantity !== ""){
+            count1+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count2=0;
         const snapshot2 = await getDocs(q2);
         snapshot2.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}09`)){count2++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}09`) && doc.data().values.rework_quantity !== ""){
+            count2+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count3=0;
         const snapshot3 = await getDocs(q3);
         snapshot3.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}09`)){count3++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}09`) && doc.data().values.rework_quantity !== ""){
+            count3+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count4=0;
         const snapshot4 = await getDocs(q4);
         snapshot4.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}09`)){count4++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}09`) && doc.data().values.rework_quantity !== ""){
+            count4+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count5=0;
         const snapshot5 = await getDocs(q5);
         snapshot5.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}09`)){count5++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}09`) && doc.data().values.rework_quantity !== ""){
+            count5+=doc.data().values.rework_quantity;
+          }
         });
         //---------------
         let count6=0;
         const snapshot6 = await getDocs(q6);
         snapshot6.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}09`)){count6++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}09`) && doc.data().values.rework_quantity !== ""){
+            count6+=doc.data().values.rework_quantity;
+          }
         });
         //---------------
         setseptember({inner:count1,yuanLiao:count2,baoJiao:count3,carBed:count4,iron:count5,pinQuan:count6});
@@ -519,7 +640,8 @@ const BarChart = ({ isDashboard = false }) => {
       }
     }
     barChartData1();
-  },[september,currentYear])
+    console.log(count++);
+  },[])
 
   //Month 10
   useEffect(()=>{
@@ -535,37 +657,49 @@ const BarChart = ({ isDashboard = false }) => {
         let count1=0;
         const snapshot1 = await getDocs(q1);
         snapshot1.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}10`)){count1++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}10`) && doc.data().values.rework_quantity !== ""){
+            count1+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count2=0;
         const snapshot2 = await getDocs(q2);
         snapshot2.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}10`)){count2++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}10`) && doc.data().values.rework_quantity !== ""){
+            count2+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count3=0;
         const snapshot3 = await getDocs(q3);
         snapshot3.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}10`)){count3++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}10`) && doc.data().values.rework_quantity !== ""){
+            count3+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count4=0;
         const snapshot4 = await getDocs(q4);
         snapshot4.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}10`)){count4++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}10`) && doc.data().values.rework_quantity !== ""){
+            count4+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count5=0;
         const snapshot5 = await getDocs(q5);
         snapshot5.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}10`)){count5++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}10`) && doc.data().values.rework_quantity !== ""){
+            count5+=doc.data().values.rework_quantity;
+          }
         });
         //---------------
         let count6=0;
         const snapshot6 = await getDocs(q6);
         snapshot6.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}10`)){count6++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}10`) && doc.data().values.rework_quantity !== ""){
+            count6+=doc.data().values.rework_quantity;
+          }
         });
         //---------------
         setoctober({inner:count1,yuanLiao:count2,baoJiao:count3,carBed:count4,iron:count5,pinQuan:count6})
@@ -574,7 +708,8 @@ const BarChart = ({ isDashboard = false }) => {
       }
     }
     barChartData1();
-  },[october,currentYear])
+    console.log(count++);
+  },[])
 
   //Month 11
   useEffect(()=>{
@@ -590,37 +725,49 @@ const BarChart = ({ isDashboard = false }) => {
         let count1=0;
         const snapshot1 = await getDocs(q1);
         snapshot1.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}11`)){count1++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}11`) && doc.data().values.rework_quantity !== ""){
+            count1+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count2=0;
         const snapshot2 = await getDocs(q2);
         snapshot2.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}11`)){count2++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}11`) && doc.data().values.rework_quantity !== ""){
+            count2+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count3=0;
         const snapshot3 = await getDocs(q3);
         snapshot3.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}11`)){count3++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}11`) && doc.data().values.rework_quantity !== ""){
+            count3+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count4=0;
         const snapshot4 = await getDocs(q4);
         snapshot4.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}11`)){count4++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}11`) && doc.data().values.rework_quantity !== ""){
+            count4+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count5=0;
         const snapshot5 = await getDocs(q5);
         snapshot5.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}11`)){count5++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}11`) && doc.data().values.rework_quantity !== ""){
+            count5+=doc.data().values.rework_quantity;
+          }
         });
         //---------------
         let count6=0;
         const snapshot6 = await getDocs(q6);
         snapshot6.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}11`)){count6++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}11`) && doc.data().values.rework_quantity !== ""){
+            count6+=doc.data().values.rework_quantity;
+          }
         });
         //---------------
         setnovember({inner:count1,yuanLiao:count2,baoJiao:count3,carBed:count4,iron:count5,pinQuan:count6})
@@ -629,7 +776,8 @@ const BarChart = ({ isDashboard = false }) => {
       }
     }
     barChartData1();
-  },[november,currentYear])
+    console.log(count++);
+  },[])
 
   //Month 12
   useEffect(()=>{
@@ -645,37 +793,49 @@ const BarChart = ({ isDashboard = false }) => {
         let count1=0;
         const snapshot1 = await getDocs(q1);
         snapshot1.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}12`)){count1++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}12`) && doc.data().values.rework_quantity !== ""){
+            count1+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count2=0;
         const snapshot2 = await getDocs(q2);
         snapshot2.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}12`)){count2++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}12`) && doc.data().values.rework_quantity !== ""){
+            count2+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count3=0;
         const snapshot3 = await getDocs(q3);
         snapshot3.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}12`)){count3++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}12`) && doc.data().values.rework_quantity !== ""){
+            count3+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count4=0;
         const snapshot4 = await getDocs(q4);
         snapshot4.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}12`)){count4++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}12`) && doc.data().values.rework_quantity !== ""){
+            count4+=doc.data().values.rework_quantity;
+          }
         });
         //-------------------
         let count5=0;
         const snapshot5 = await getDocs(q5);
         snapshot5.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}12`)){count5++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}12`) && doc.data().values.rework_quantity !== ""){
+            count5+=doc.data().values.rework_quantity;
+          }
         });
         //---------------
         let count6=0;
         const snapshot6 = await getDocs(q6);
         snapshot6.forEach(doc => {
-          if(doc.data().timeStamp.startsWith(`${currentYear}12`)){count6++}
+          if(doc.data().timeStamp.startsWith(`${currentYear}12`) && doc.data().values.rework_quantity !== ""){
+            count6+=doc.data().values.rework_quantity;
+          }
         });
         //---------------
         setdecember({inner:count1,yuanLiao:count2,baoJiao:count3,carBed:count4,iron:count5,pinQuan:count6});
@@ -684,7 +844,8 @@ const BarChart = ({ isDashboard = false }) => {
       }
     }
     barChartData1();
-  },[december,currentYear])
+    console.log(count++);
+  },[])
 
 
   const data = [

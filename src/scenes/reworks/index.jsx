@@ -4,7 +4,6 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import { useTheme } from "@mui/material";
-import Link from '@mui/material/Link';
 import { useNavigate } from "react-router-dom";
 import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
 import { db } from "../../firebase";
@@ -13,7 +12,7 @@ import { useParams } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import IconButton from "@mui/material/IconButton";
-
+let count = 0
 const Reworks = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -21,6 +20,7 @@ const Reworks = () => {
 
   const [dataCollection, setDataCollection] = useState([]);
   const [toReworkSpecific, setToReworkSpecific] = useState(false);
+  const [restart, setRestart] = useState(0)
   
   //for delete
   const [hoveredRow, setHoveredRow] = useState(null);
@@ -47,32 +47,49 @@ const Reworks = () => {
         console.log(error);
       }
       setDataCollection(dataList);
+      
+
+      count++;
+      console.log("run: "+count);
     })();  
-  }, [dataCollection]);
+  }, [restart]);
 
   function destructData(data) {
     let dataList = [];
     data.forEach(element => {
         let {id, values:{
           order_id, order_date, return_date, order_type, customer_name, rework_quantity,
-          product_name, product_specification, return_reason
+          product_name, product_specification, factor_name, department_name
         }}=element
-        dataList.push({id:id, order_id:order_id, order_date:order_date,
-          return_date:return_date,order_type:order_type, customer_name:customer_name,
+
+
+        const formattedOrderDate = new Date(order_date).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit"
+        });
+
+        const formattedReturnDate = new Date(return_date).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit"
+        });
+
+        dataList.push({id:id, order_id:order_id, order_date:formattedOrderDate,
+          return_date:formattedReturnDate,order_type:order_type, customer_name:customer_name,
           rework_quantity:rework_quantity,product_name:product_name,
-          product_specification:product_specification,return_reason:return_reason});
+          product_specification:product_specification,factor_name:factor_name, department_name:department_name});
     });
     return dataList;
   }
 
-  // console.log(destructData(dataCollection));
 
   const columns = [
-    { field: "id", headerName: "重工編號",flex:1, render:rowData=> <Link href="/">{rowData.id}</Link>},
+    { field: "id", headerName: "重工編號",flex:1,},
     { field: "order_id", headerName: "排程單號",flex:1 },
     { field: "order_date", headerName: "訂單日期",flex:1 },
     { field: "return_date", headerName: "退貨日期",flex:1 },
-    { field: "order_type", headerName: "訂單類別",flex:1 },
+    { field: "order_type", headerName: "類別",flex:0.5 },
     {
       field: "customer_name",
       headerName: "客戶",
@@ -89,7 +106,7 @@ const Reworks = () => {
     {
       field: "product_name",
       headerName: '產品名稱',
-      flex: 1,
+      align: "left",
     },
     {
       field: "product_specification",
@@ -97,9 +114,15 @@ const Reworks = () => {
       flex: 1,
     },
     {
-      field: "return_reason",
-      headerName: "退貨原因",
+      field: "factor_name",
+      headerName: "重工原因",
       flex: 1,
+    },
+    {
+      field: "department_name",
+      headerName: "責任部門",
+      flex: 1,
+      cellClassName: "name-column--cell"
     },
     {
       field:"actions",
@@ -130,7 +153,9 @@ const Reworks = () => {
               <IconButton type="button" onClick={
                 async() => {
                   await deleteDoc(doc(db, "Reworks", hoveredRow))
+                  setRestart(restart+1)
                   }
+                
                 }>
                 <DeleteIcon />
               </IconButton>
@@ -138,12 +163,24 @@ const Reworks = () => {
           );
         } else return null;
       }
-
     }
   ];
 
+  //for useparam
+  const delay = ms => new Promise(
+    resolve=> setTimeout(resolve, ms)
+  )
   const { id } = useParams();
-  // setReworkId(id);
+
+  useEffect(()=>{
+    if(!id){
+      delay(1000)
+      setToReworkSpecific(false)
+      delay(1000)
+    }
+  },[])
+
+
 
   return (
     <Box m="20px">
@@ -151,7 +188,7 @@ const Reworks = () => {
       <div>
         <Header
         title="重工總表"
-        subtitle="List of reworks for Future Reference"
+        subtitle="若[責任部門]空欄，請品管審核此案件"
       />
       <Box
         m="40px 0 0 0"
@@ -189,17 +226,14 @@ const Reworks = () => {
           rows={destructData(dataCollection)}
           columns={columns}
           components={{ Toolbar: GridToolbar }}
-          initialState={{ pinnedColumns: { right: ["actions"] } }}
+          // initialState={{ pinnedColumns: { right: ["actions"] } }}
           componentsProps={{
             row:{
               onMouseEnter: onMouseEnterRow,
               onMouseLeave: onMouseLeaveRow
             }
           }}
-          // onRowClick={(params) => {
-          //   navigate(`/reworks/${params.row.id}`);
-          //   setToReworkSpecific(true);
-          // }}
+
         />
       </Box>
         </div>

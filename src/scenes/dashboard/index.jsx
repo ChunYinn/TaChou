@@ -4,17 +4,18 @@ import { mockTransactions } from "../../data/mockData";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
 import ConstructionRoundedIcon from '@mui/icons-material/ConstructionRounded';
 import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded';
+import AssignmentLateIcon from '@mui/icons-material/AssignmentLate';
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import TrafficIcon from "@mui/icons-material/Traffic";
 import Header from "../../components/Header";
-// import BarChart from "../../components/BarChart";
+import BarChart from "../../components/BarChart";
 import StatBox from "../../components/StatBox";
 import PieChart from "../../components/PieChart";
-import { collection, query, where, getCountFromServer } from "firebase/firestore";
+import { collection, query, where, getCountFromServer, getDocs } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useEffect, useState } from "react";
 
-
+let count = 0;
 const Dashboard = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -22,6 +23,8 @@ const Dashboard = () => {
   //usestate store values for stat
   const [numReworks, setNumReworks] = useState(0);
   const [numIncompleteReworks, setnumIncompleteReworks] = useState(0);
+  const [IncompleteFactor, setIncompleteFactor] = useState(0);
+  const [numLastReworks, setNumLastReworks] = useState(0);
 
   //cureent month / year 
   const currentMonth = String(new Date().getMonth() + 1);
@@ -33,30 +36,98 @@ const Dashboard = () => {
     YearWmonth = `${currentYear}${currentMonth}`
   };
 
+  //check is numeric
+  function containsOnlyNumbers(str) {
+    return /^\d+$/.test(str);
+  }
+
   //Fetch GetReworkMonthly
   useEffect(()=>{
     const GetReworkMonthly = async()=>{
       try {
+        let num = 0;
         const q = query(collection(db, "Reworks"), where("timeStamp", ">=", YearWmonth));
-        const snapshot = await getCountFromServer(q);
-        console.log(snapshot)
-        setNumReworks(snapshot.data().count)
-        // console.log(numReworks);
+        const snapshot = await getDocs(q);
+        snapshot.forEach((doc)=>{
+          if (doc.data().values.rework_quantity !== "" && containsOnlyNumbers(doc.data().values.rework_quantity)) {
+            num += Number(doc.data().values.rework_quantity)
+          }
+        })
+        setNumReworks(num)
       } catch (error) {
         console.log(error);
       }
     }
     GetReworkMonthly();
+    console.log(count++);
   },[numReworks, YearWmonth])
+
+
+  // //fetch last month reworks
+  // let lastMonth, lastYear;
+  // if (currentMonth === 1) {
+  //   lastMonth = 12;
+  //   lastYear = currentYear - 1;
+  // } else {
+  //   lastMonth = currentMonth-1;
+  //   lastYear = currentYear;
+  // }
+  // console.log("lastmonth"+lastMonth)
+  // console.log("lastyear"+lastYear)
+
+  // let lastMonthDays;
+  // if (lastMonth === 2) {
+  //   lastMonthDays = lastYear % 4 === 0 ? 29 : 28;
+  // } else if ([4, 6, 9, 11].includes(lastMonth)) {
+  //   lastMonthDays = 30;
+  // } else {
+  //   lastMonthDays = 31;
+  // }
+  // console.log("lastMonthDays"+lastMonthDays)
+  // const lastMonthWithYear = lastMonth < 10 ? `${lastYear}0${lastMonth}` : `${lastYear}${lastMonth}`;
+
+
+  // useEffect(()=>{
+  //   const GetReworkLastMonthly = async()=>{
+  //     try {
+  //       let num = 0;
+  //       const lastMonthWithYear = lastMonth < 10 ? `${lastYear}0${lastMonth}` : `${lastYear}${lastMonth}`;
+  //       const startAt = Number(lastMonthWithYear);
+  //       console.log("start"+startAt)
+  //       const endAt = Number(lastYear + (lastMonth < 10 ? "0" + lastMonth : lastMonth) + (lastMonthDays < 10 ? "0" + lastMonthDays : lastMonthDays)+"000000");
+  //       console.log("end"+endAt)
+  //       const q = query(collection(db, "Reworks"), (doc) => {
+  //         return doc.data().timeStamp >= startAt && Number(doc.data().timeStamp) < endAt;
+  //       });
+  //       const snapshot = await getDocs(q);
+  //       snapshot.forEach((doc)=>{
+  //         if (doc.data().values.rework_quantity !== "" && containsOnlyNumbers(doc.data().values.rework_quantity)) {
+  //           num += Number(doc.data().values.rework_quantity)
+  //         }
+  //       })
+  //       setNumLastReworks(num)
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
+  //   GetReworkLastMonthly();
+  //   console.log(count++);
+  // },[numLastReworks, lastMonthWithYear])
+  
 
   //fetch incomplete reworks
   useEffect(()=>{
     const GetIncompleteReworks = async()=>{
       try {
+        let num = 0;
         const q = query(collection(db, "Reworks"), where("values.rework_complete_date", "==", ""));
-        const snapshot = await getCountFromServer(q);
-        setnumIncompleteReworks(snapshot.data().count)
-        // console.log("rework incomplete: " + numIncompleteReworks);
+        const snapshot = await getDocs(q);
+        snapshot.forEach((doc)=>{
+          if (doc.data().values.rework_quantity !== "" &&　containsOnlyNumbers(doc.data().values.rework_quantity)) {
+            num += Number(doc.data().values.rework_quantity)
+          }
+        })
+        setnumIncompleteReworks(num)
       } catch (error) {
         console.log(error);
       }
@@ -64,18 +135,28 @@ const Dashboard = () => {
     GetIncompleteReworks();
   },[numIncompleteReworks])
 
-  // //import google cloud client library
-  // const {BigQuery} = require('@google-cloud/bigquery');
+  //fetch 品管未審核原因的重工
+  //fetch incomplete reworks
+  useEffect(()=>{
+    const GetIncompleteFactor = async()=>{
+      try {
+        let num = 0;
+        const q = query(collection(db, "Reworks"), where("values.factor_name", "==", ""));
+        const snapshot = await getDocs(q);
+        snapshot.forEach((doc)=>{
+          num += 1
 
-  // async function createDataset() {
-  //   // Creates a client
-  //   const bigqueryClient = new BigQuery();
+        })
+        setIncompleteFactor(num)
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    GetIncompleteFactor();
+  },[IncompleteFactor])
 
-  //   // Create the dataset
-  //   const [dataset] = await bigqueryClient.createDataset(rework_dataset);
-  //   console.log(`Dataset ${tachourework.rework_dataset} created.`);
-  // }
-  // createDataset();
+
+  
 
   return (
     <Box m="20px">
@@ -153,18 +234,18 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="32,441"
-            subtitle="New Clients"
+            title={IncompleteFactor}
+            subtitle="還未審核重工筆數"
             progress="0.30"
-            increase="+5%"
+            // increase="+5%"
             icon={
-              <PersonAddIcon
+              <AssignmentLateIcon
                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
               />
             }
           />
         </Box>
-        <Box
+        {/* <Box
           gridColumn="span 3"
           backgroundColor={colors.primary[400]}
           display="flex"
@@ -172,7 +253,7 @@ const Dashboard = () => {
           justifyContent="center"
         >
           <StatBox
-            title="1,325,134"
+            title={numLastReworks}
             subtitle="Traffic Received"
             progress="0.80"
             increase="+43%"
@@ -182,9 +263,9 @@ const Dashboard = () => {
               />
             }
           />
-        </Box>
+        </Box> */}
 
-        {/* ROW 2
+        {/* ROW 2 */}
         <Box
           gridColumn="span 12"
           gridRow="span 2"
@@ -224,9 +305,9 @@ const Dashboard = () => {
           <Box height="250px" m="-20px 0 0 0">
             <BarChart isDashboard={true} />
           </Box>
-        </Box> */}
+        </Box>
         {/* ------------------------------------------------- */}
-        <Box
+        {/* <Box
           gridColumn="span 4"
           gridRow="span 2"
           backgroundColor={colors.primary[400]}
@@ -275,21 +356,24 @@ const Dashboard = () => {
               </Box>
             </Box>
           ))}
-        </Box>
+        </Box> */}
 
         {/* ROW 3 */}
         <Box
-          gridColumn="span 8"
+          gridColumn="span 12"
           gridRow="span 2"
           backgroundColor={colors.primary[400]}
+          justifyContent="space-between"
+          alignItems="center"
         >
+
           <Typography
             variant="h4"
             fontWeight="bold"
             color={colors.greenAccent[500]}
             sx={{ padding: "30px 30px 0 30px" }}
           >
-            重工原因比例
+            前五大重工原因比例
           </Typography>
           <Box height="250px" mt="-20px">
             <PieChart isDashboard={true} />

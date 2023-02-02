@@ -43,7 +43,7 @@ const Form = () => {
   //------------------------------------------------------------------------------
 
   //create date for id
-  const today_str = new Date().toLocaleString("en-US", { timeZone: "Asia/Shanghai" })
+  const today_str = new Date().toLocaleString("en-US", { timeZone: "Asia/Taipei" })
   const today = new Date(today_str).toISOString().substring(0, 19).replace(/[T-]|:/g,'');
 
   //handle submit event
@@ -60,7 +60,7 @@ const Form = () => {
           imgURL: ""
         });
         console.log("finised submit");
-        // resetForm({values:""});
+        resetForm({values:""});
         // setItem('')
         // set_expect_delivery_date_Value(null)
         // set_order_date_Value(null)
@@ -104,7 +104,7 @@ const Form = () => {
                   imgURL: downloadURL
                 })
                 console.log("finised submit");
-                // resetForm({values:""});
+                resetForm({values:""});
                 // setItem('')
                 // set_expect_delivery_date_Value(null)
                 // set_order_date_Value(null)
@@ -440,9 +440,7 @@ const initialValues = {
   iron_id: "",
   // --------------------------品管填寫--------------------------------
   rework_factor_description: "",
-  factor_id: "",
   factor_name: "",
-  department_id: "",
   department_name: "",
   improve_id: "",
   solve_method: "",

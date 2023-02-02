@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useContext, useState, useEffect} from "react";
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -14,6 +14,10 @@ import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
 import PieChartOutlineOutlinedIcon from "@mui/icons-material/PieChartOutlineOutlined";
 import TimelineOutlinedIcon from "@mui/icons-material/TimelineOutlined";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
+import { AuthContext } from "../../context/AuthContext";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../firebase";
+import {mockDataTeam} from "../../data/mockData"
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
@@ -38,7 +42,31 @@ const Sidebar = () => {
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
+
+  const {currentUser} = useContext(AuthContext);
+  const [dataCollection, setDataCollection] = useState([]);
+
+  useEffect(()=>{
+    (async()=>{
+      let dataList = []
+      try {
+        const querySnapshot = await getDocs(collection(db, "Team"));
+        querySnapshot.forEach((doc) => {
+          dataList.push({id:doc.id, ...doc.data()})
+        })
+      } catch (error) {
+        console.log(error);
+      }
+      setDataCollection(dataList);
+    })();  
+  }, []);
   
+  const User = (currentUser.email.split('@')[0])
+  const UserObject = mockDataTeam.filter(component => component.id == User);
+  console.log(UserObject);
+  const UserObject1 = dataCollection.filter(component => component.id == User);
+  console.log(UserObject1);
+
   return (
     <Box
       sx={{
@@ -97,7 +125,10 @@ const Sidebar = () => {
                   alt="profile-user"
                   width="100px"
                   height="100px"
-                  src={`../../assets/user1.png`}
+                  src={
+                    User === "manager" ? `../../assets/manager.png`
+                  : `../../assets/tachou.png`
+                  }
                   style={{ cursor: "pointer", borderRadius: "50%" }}
                 />
               </Box>
@@ -108,10 +139,15 @@ const Sidebar = () => {
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  Sunny
+                { 
+                  UserObject[0].employee_name
+                }
+                  
                 </Typography>
                 <Typography variant="h5" color={colors.greenAccent[500]}>
-                  軟體顧問/工程師
+                { 
+                  UserObject[0].department_name + "  |  " + UserObject[0].position
+                }
                 </Typography>
               </Box>
             </Box>
@@ -162,7 +198,7 @@ const Sidebar = () => {
               selected={selected}
               setSelected={setSelected}
             />
-            <Item
+            {/* <Item
               title="日曆排程"
               to="/calendar"
               icon={<CalendarTodayOutlinedIcon />}
@@ -175,9 +211,9 @@ const Sidebar = () => {
               icon={<HelpOutlineOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
-            />
+            /> */}
 
-            <Typography
+            {/* <Typography
               variant="h6"
               color={colors.grey[300]}
               sx={{ m: "15px 0 5px 20px" }}
@@ -204,7 +240,7 @@ const Sidebar = () => {
               icon={<TimelineOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
-            />
+            /> */}
             
           </Box>
         </Menu>

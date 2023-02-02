@@ -1,15 +1,39 @@
+import {useState, useEffect} from "react";
 import { Box, Typography, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import { mockDataTeam } from "../../data/mockData";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
 import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
 import Header from "../../components/Header";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../firebase";
+
 
 const Team = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  const [dataCollection, setDataCollection] = useState([]);
+
+  useEffect(()=>{
+    (async()=>{
+      let dataList = []
+      try {
+        const querySnapshot = await getDocs(collection(db, "Team"));
+        querySnapshot.forEach((doc) => {
+          dataList.push({id:doc.id, ...doc.data()})
+        })
+      } catch (error) {
+        console.log(error);
+      }
+      setDataCollection(dataList);
+    })();  
+  }, []);
+  console.log(dataCollection);
+
+
+
   const columns = [
     { field: "id", headerName: "ID" },
     {
@@ -21,6 +45,12 @@ const Team = () => {
     {
       field: "department_name",
       headerName: "部門",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "position",
+      headerName: "職位",
       flex: 1,
       cellClassName: "name-column--cell",
     },
@@ -89,7 +119,7 @@ const Team = () => {
           },
         }}
       >
-        <DataGrid checkboxSelection rows={mockDataTeam} columns={columns} />
+        <DataGrid checkboxSelection rows={dataCollection} columns={columns} />
       </Box>
     </Box>
   );

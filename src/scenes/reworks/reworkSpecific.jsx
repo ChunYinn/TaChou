@@ -14,16 +14,24 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import Header from "../../components/Header";
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { tokens } from '../../theme';
+import Autocomplete from '@mui/material/Autocomplete';
+import CustomizedDialogs from './photoframe';
+
 
 let dataList = []
-
+let orderList =[]
+let factorList = []
+let count = 0
 export default function ReworkDetail({id}) {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
     const [dataCollection, setDataCollection] = useState([]);
+    const [imageURL, setimageURL] = useState("")
+    const [orderID, setOrderID] = useState("")
     const isNonMobile = useMediaQuery("(min-width:600px)");
 
+    //get id values
     useEffect(()=>{
         (async()=>{
           dataList = []
@@ -36,14 +44,34 @@ export default function ReworkDetail({id}) {
           } catch (error) {
             console.log(error);
           }
-          setDataCollection(dataList);
+          setOrderID(dataList[0].values.order_id)
+          setimageURL(dataList[0].imgURL);
           // set old values to initiavalues
           initialValues={...dataList[0].values}
-        
         })();  
     },[]);
 
-    // console.log(initialValues);
+    //get order value
+    useEffect(()=>{
+      (async()=>{
+        let dataLists = []
+        try {
+          const q = query(collection(db, "Reworks"), where("values.order_id", "==", orderID));
+          const querySnapshot = await getDocs(q);
+          querySnapshot.forEach((doc) => {
+              dataLists.push({id:doc.id, ...doc.data()});
+              // console.log(doc.data());
+          });
+        } catch (error) {
+          console.log(error);
+        }
+        console.log(dataLists);
+        setDataCollection(dataLists);
+        // console.log(count++ );
+      })();  
+  },[orderID]);
+
+    
 
     const columns = [
         { field: "id", headerName: "重工編號",flex:1, render:rowData=> <Link href="/">{rowData.id}</Link>},
@@ -110,6 +138,33 @@ export default function ReworkDetail({id}) {
     //--------------------------品管填寫--------------------------------
     //Rework Complete Date
     const [rework_complete_date_value, set_rework_complete_date_value] = React.useState(null);
+
+    //Select Factor Name
+    //sunny
+    useEffect(()=>{
+      (async()=>{
+        factorList = [""]
+        try {
+          const q = query(collection(db, "Factors"));
+          const querySnapshot = await getDocs(q);
+          querySnapshot.forEach((doc) => {
+              factorList.push(doc._document.data.value.mapValue.fields.factor_name.stringValue);
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      })();  
+  },[]);
+
+    const [factor, setFactor] = React.useState(factorList[0]);
+    const [inputFactor, setInputFactor] = React.useState('');
+
+    
+    //Select Department
+    const [department, setDepartment] = useState('');
+    const handleSelectDepartmentChange = (event) => {
+      setDepartment(event.target.value);
+    };
   
     //-------------------------原料主管填寫--------------------------------
     //Raw Material Form Column 3 Date & Time
@@ -176,6 +231,7 @@ export default function ReworkDetail({id}) {
         <Button size="medium" variant="contained" sx={{bgcolor:colors.blueAccent[700], fontSize:"14px"}} onClick={()=>{
           setpinQuan(false); setyuanLiao(false); setbaoJiao(false); setjiLiao(false); setcarBed(true);
         }}>車床</Button>
+        <CustomizedDialogs imgURL = {imageURL}></CustomizedDialogs>
       </Box>
       
       <Box>
@@ -449,11 +505,52 @@ export default function ReworkDetail({id}) {
                     "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
                   }}
                 >
+                  <FormControl
+                    fullWidth
+                   variant="filled">
+                <InputLabel id="department_name">責任部門名稱</InputLabel>
+                <Select
+                  fullWidth
+                  label="責任部門名稱"
+                  labelId="department_name"
+                  value={department||values.department_name}
+                  onChange={(department) => {
+                    handleSelectDepartmentChange(department);
+                    values.department_name = department.target.value
+                  }}
+                  sx={{ gridColumn: "span 2" }}
+                >
+                  <MenuItem value={'品管部'}>品管部</MenuItem>
+                  <MenuItem value={'車床部'}>車床部</MenuItem>
+                  <MenuItem value={'包膠部'}>包膠部</MenuItem>
+                  <MenuItem value={'原料部'}>原料部</MenuItem>
+                  <MenuItem value={'鐵材部'}>鐵材部</MenuItem>
+                  <MenuItem value={'內部'}>內部</MenuItem>
+                </Select>
+              </FormControl>
+              <Autocomplete
+                  //sunny
+                  fullWidth
+                  variant="filled"
+                  value={factor||values.factor_name}
+                  onChange={(event, newValue) => {
+                    setFactor(newValue);
+                    values.factor_name = newValue
+                  }}
+                  inputValue={inputFactor}
+                  onInputChange={(event, newInputValue) => {
+                    setInputFactor(newInputValue);
+                  }}
+                    id="factor_name"
+                    options={factorList}
+                    sx={{ gridColumn: "span 2" }}
+                    renderInput={(params) => <TextField {...params} label="重工原因 大項歸類" />}
+                  />
                   <TextField
                       fullWidth
                       variant="filled"
                       type="text"
-                      label="重工原因描述"
+                      label="重工原因 小項描述"
                       onBlur={handleBlur}
                       onChange={handleChange}
                       value={values.rework_factor_description}
@@ -462,58 +559,9 @@ export default function ReworkDetail({id}) {
                       helperText={touched.rework_factor_description && errors.rework_factor_description}
                       sx={{ gridColumn: "span 4" }}
                     />
-                  <TextField
-                      fullWidth
-                      variant="filled"
-                      type="text"
-                      label="原因編號"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      value={values.factor_id}
-                      name="factor_id"
-                      error={!!touched.factor_id && !!errors.factor_id}
-                      helperText={touched.factor_id && errors.factor_id}
-                      sx={{ gridColumn: "span 2" }}
-                    />
-                  <TextField
-                      fullWidth
-                      variant="filled"
-                      type="text"
-                      label="原因名稱"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      value={values.factor_name}
-                      name="factor_name"
-                      error={!!touched.factor_name && !!errors.factor_name}
-                      helperText={touched.factor_name && errors.factor_name}
-                      sx={{ gridColumn: "span 2" }}
-                    />
-                  <TextField
-                      fullWidth
-                      variant="filled"
-                      type="text"
-                      label="責任部門編號"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      value={values.department_id}
-                      name="department_id"
-                      error={!!touched.department_id && !!errors.department_id}
-                      helperText={touched.department_id && errors.department_id}
-                      sx={{ gridColumn: "span 2" }}
-                    />
-                  <TextField
-                      fullWidth
-                      variant="filled"
-                      type="text"
-                      label="責任部門名稱"
-                      onBlur={handleBlur}
-                      onChange={handleChange}
-                      value={values.department_name}
-                      name="department_name"
-                      error={!!touched.department_name && !!errors.department_name}
-                      helperText={touched.department_name && errors.department_name}
-                      sx={{ gridColumn: "span 2" }}
-                    />
+
+                  
+                  
                   <TextField
                       fullWidth
                       variant="filled"
@@ -1459,6 +1507,7 @@ export default function ReworkDetail({id}) {
                       name="extrusion_form_column_35"
                       error={!!touched.extrusion_form_column_35 && !!errors.extrusion_form_column_35}
                       helperText={touched.extrusion_form_column_35 && errors.extrusion_form_column_35}
+                      
                       sx={{ gridColumn: "span 1" }}
                     />
                     <TextField
@@ -1810,6 +1859,7 @@ export default function ReworkDetail({id}) {
           rows={destructData(dataCollection)}
           columns={columns}
           components={{ Toolbar: GridToolbar }}
+          style={{ height: "300px" }}
         />
       </Box>
     
@@ -1844,9 +1894,7 @@ let initialValues = {
   iron_id: "",
   // --------------------------品管填寫--------------------------------
   rework_factor_description: "",
-  factor_id: "",
   factor_name: "",
-  department_id: "",
   department_name: "",
   improve_id: "",
   solve_method: "",
