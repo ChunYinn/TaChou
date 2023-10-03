@@ -1,76 +1,43 @@
-<<<<<<< HEAD
-# Getting Started with Create React App
+# Tachou Product Improvement System
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![Tachou Rubber Logo](public/assets/tachou.png)
 
-## Available Scripts
+## Introduction
 
-In the project directory, you can run:
+Welcome to the prototype code for Tachou Rubber's Product Improvement System. This project was initiated to address product return issues in collaboration with the factory. Constructed primarily using Material UI, this comprehensive system offers insights into product return reasons and rework processes across various departments.
 
-### `npm start`
+## Project Overview
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Duration**: Oct 2022 - Jan 2023
+- **Role**: Full Stack Developer
+- **Technologies**: JavaScript, React.js, Firebase
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Key Achievements
 
-### `npm test`
+- Led a 4-month project, collaborating closely with the factory to develop the Product Improvement System.
+- Designed an intuitive dashboard that presents data collected from 5 different departments, offering insights into product return reasons and rework processes.
+- Achieved a 50% reduction in product rework.
+- Enhanced customer satisfaction by 20%.
+- Realized a cost-saving of 20K AUD.
+- Successfully communicated complex technical concepts to non-technical stakeholders in an understandable manner, ensuring clarity and alignment on project objectives and outcomes.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Running the Prototype
 
-### `npm run build`
+1. Clone the repository and navigate to its directory.
+2. Install the necessary dependencies:
+\```
+npm install
+\```
+3. Start the development server:
+\```
+npm start
+\```
+4. Open your browser and navigate to `localhost:3000`.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+**Login Credentials**:
+- **Username**: manager@tachou.com
+- **Password**: 12345678
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Feedback & Contributions
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-=======
-# TaChou
-
-This is a rework system prototype built in REACT & Firebase
->>>>>>> f862bd99042b7d4af893473677a9c87045e97e08
+Feel free to take a look around and provide feedback. Contributions, suggestions, and enhancements are always welcome!
